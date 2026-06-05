@@ -1,65 +1,38 @@
-## Scope (Task 1 — design only)
+## Goal
 
-Build the static landing page in the chosen "Occult Archivist" direction, retuned **lighter / more playful** (whimsical-mystery, not horror). No backend, no hashing, no Sheets wiring yet.
+Deploy the app as a static SPA to GitHub Pages at `https://<user>.github.io/monkey-game/` via GitHub Actions.
 
-## Vibe adjustments
+## Approach
 
-- **Typography**: swap `Almendra` (gothic-horror) for a playful display face. Use **"Silver Charm Duo"** for headings, with `Caveat` as a safe Google Fonts fallback if Silver Charm Duo isn't loadable from a public CDN (it's a paid Adobe font, so I'll attempt to load it from a `@font-face` URL if you provide one, otherwise fall back). Body stays clean — `Space Mono` swapped for **`Nunito`** for a warmer, rounder read.
-- **Palette retune** (lighter, still moody but cartoonish):
-  - background `#1a1622` (deep plum, not black)
-  - foreground `#f5ecd9` (warm cream)
-  - muted `#8a7fa3`
-  - primary `#e89b3c` (warm amber — friendly accent instead of blood red)
-  - secondary `#7ec4a6` (soft mint for the "correct answer" / reveal hint)
-  - border `#3a3148`
-- **Motion**: keep gentle `bob`; soften `flicker` (no horror-strobe — just a slow lantern glow pulse); keep `ink-spread` reveal.
-- Drop the `[!]` decorative accent; keep a faint `?` watermark in a playful tilt.
+The current stack (TanStack Start + nitro) is SSR-first and targets Cloudflare Workers — not compatible with GitHub Pages. Since the app is effectively one page with all logic client-side, the cleanest path is to **replace TanStack Start with plain Vite + React** (a true SPA build that emits static `index.html` + assets to `dist/`).
 
-## What gets built
+## Changes
 
-1. **Design tokens** in `src/styles.css`
-   - Add the lighter palette as semantic tokens (oklch).
-   - Load fonts in `__root.tsx` head links (Silver Charm Duo via Adobe URL if provided, plus Caveat + Nunito from Google Fonts as fallback chain).
-   - Add keyframes `bob`, `glow-pulse`, `ink-spread` and utility classes.
+### 1. Convert to plain Vite + React SPA
+- Replace `vite.config.ts` to use `@vitejs/plugin-react` + `@tailwindcss/vite` + `vite-tsconfig-paths`, with `base: '/monkey-game/'`.
+- Add `index.html` at project root with the head meta tags, Google Fonts links, and `<div id="root">`.
+- Add `src/main.tsx` that mounts `<App />` into `#root` and imports `./styles.css`.
+- Create `src/App.tsx` containing the current home page content (moved from `src/routes/index.tsx`).
+- Remove TanStack Start bootstrap files: `src/router.tsx`, `src/server.ts`, `src/start.ts`, `src/routeTree.gen.ts`, `src/routes/__root.tsx`, `src/routes/index.tsx`, and the `src/routes/` folder.
+- Update `package.json`: remove `@tanstack/react-start`, `@tanstack/react-router`, `@tanstack/router-plugin`, `nitro`, `@lovable.dev/vite-tanstack-config`. Keep `@tanstack/react-query` (unused but harmless) or remove it — will remove since nothing uses it after the migration.
+- Components (`ArtifactCarousel`, `ArtifactDialog`, `SubmitAnswerDialog`) and data (`artifacts.ts`) stay unchanged.
 
-2. **Artifact data file** `src/data/artifacts.ts` — **single source of truth, easy to edit**
-   ```ts
-   export const artifacts = [
-     { id: "01", title: "...", image: artifact01, caption: "...", lore: "...", hidden: false },
-     ...
-   ];
-   ```
-   To swap an image later you just drop a new file in `src/assets/artifacts/` and change one import line. 6 entries (5 visible + 1 hidden slot).
+### 2. GitHub Pages SPA fallback
+- Copy `dist/index.html` to `dist/404.html` during the workflow so deep links / refreshes work (GitHub Pages serves `404.html` for unknown paths). For this single-page app it's mainly a safety net.
+- Add empty `public/.nojekyll` so Pages doesn't strip underscore-prefixed asset folders.
 
-3. **Home route** `src/routes/index.tsx`
-   - Header ("Case File #88-Alpha" + H1 "Archive of Unspoken Echoes"), centerpiece carousel, dot indicators, floating amber "SUBMIT ANSWER" seal, footer, soft `?` watermark.
-   - Update `head()` meta for the ARG site.
+### 3. GitHub Actions workflow (`.github/workflows/deploy.yml`)
+- Trigger: push to `main` + manual `workflow_dispatch`.
+- Jobs:
+  - **build**: checkout, setup Bun, `bun install`, `bun run build`, `cp dist/index.html dist/404.html`, upload `dist/` as Pages artifact.
+  - **deploy**: `actions/deploy-pages@v4` with proper `pages: write` / `id-token: write` permissions and `github-pages` environment.
 
-4. **Carousel component** `src/components/ArtifactCarousel.tsx`
-   - **Circular artifact frame** — the clickable artifact is rendered inside a circular container (`rounded-full`, `aspect-square`, `overflow-hidden`) with a double-ring decorative border and the bob animation. Images render with `object-cover` so circular source art fits cleanly and square placeholders still look intentional.
-   - Big left/right chevron buttons, dot indicators reflecting active index.
-   - Keyboard arrow-key navigation + basic touch swipe.
-   - Hidden slot renders as a locked silhouette (preview of reveal behavior coming later).
+### 4. Notes
+- After first deploy, the user must enable Pages in repo settings: **Settings → Pages → Source: GitHub Actions**.
+- If they later use a custom domain or a user/organization site (`<user>.github.io`), the `base` in `vite.config.ts` needs to change to `/`.
 
-5. **Artifact modal** `src/components/ArtifactDialog.tsx`
-   - Shadcn `Dialog`. Large circular artifact image + title + lore text, themed to match.
+## Files touched
 
-6. **Submit dialog (visual only)** `src/components/SubmitAnswerDialog.tsx`
-   - Triggered by the floating amber seal. Name + Answer fields, "Transmit" button, placeholder status line. No logic yet.
-
-7. **Placeholder artwork** (5 images via `imagegen`, saved under `src/assets/artifacts/`)
-   - Generated **on a transparent background, centered, fitting a circle** so they preview well in the circular frame and your replacements (also circular) will drop in seamlessly. Whimsical hand-drawn cartoon style.
-
-8. **Responsiveness**
-   - Carousel arrows shrink and gaps collapse on mobile; circular artifact scales down; seal becomes a smaller pill at bottom-center on small screens; modals go full-width.
-
-## Out of scope this turn
-
-- Answer hashing & verification (Task 2.1)
-- Hidden-slot reveal on correct answer (Task 2.2)
-- Sheets / Formspree submission wiring (Task 2.3)
-- Sub-routes for footer links (kept as `#` placeholders)
-
-## Notes on the font
-
-If you have a hosted URL or Adobe Fonts kit ID for **Silver Charm Duo**, paste it and I'll wire it directly. Otherwise the heading will render in `Caveat` (a similar playful handwritten Google font) until you provide the file/kit — this keeps the build green and the swap is one CSS line later.
+- replace: `vite.config.ts`, `package.json`
+- create: `index.html`, `src/main.tsx`, `src/App.tsx`, `public/.nojekyll`, `.github/workflows/deploy.yml`
+- delete: `src/router.tsx`, `src/server.ts`, `src/start.ts`, `src/routeTree.gen.ts`, `src/routes/__root.tsx`, `src/routes/index.tsx`, `src/routes/` (and `src/lib/lovable-error-reporting.ts` if unused after cleanup — will verify)
