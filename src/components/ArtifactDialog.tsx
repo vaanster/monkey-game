@@ -28,7 +28,7 @@ export function ArtifactDialog({ artifact, open, onOpenChange }: Props) {
             <div className="absolute -inset-2 rounded-full border-2 border-dashed border-muted/40" />
             <div className="relative size-48 sm:size-56 rounded-full overflow-hidden bg-background ring-4 ring-primary/30">
               <img
-                src={artifact.detailImage}
+                src={artifact.image}
                 alt={artifact.title}
                 width={768}
                 height={768}
