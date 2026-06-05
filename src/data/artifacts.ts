@@ -5,6 +5,7 @@ import artifact02 from "@/assets/artifacts/chef_avatar.png";
 import artifact03 from "@/assets/artifacts/artifact-03.png";
 import artifact04 from "@/assets/artifacts/artifact-04.png";
 import artifact05 from "@/assets/artifacts/artifact-05.png";
+import chefCard from "@/assets/artifacts/chef_card.png";
 
 export type Artifact = {
   id: string;
