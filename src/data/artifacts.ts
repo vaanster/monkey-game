@@ -1,7 +1,7 @@
 // Single source of truth for carousel artifacts.
 // To swap an image: drop a new file in src/assets/artifacts/ and update the import below.
 import artifact01 from "@/assets/artifacts/artifact-01.png";
-import artifact02 from "@/assets/artifacts/artifact-02.png";
+import artifact02 from "@/assets/artifacts/chef_avatar.png";
 import artifact03 from "@/assets/artifacts/artifact-03.png";
 import artifact04 from "@/assets/artifacts/artifact-04.png";
 import artifact05 from "@/assets/artifacts/artifact-05.png";
