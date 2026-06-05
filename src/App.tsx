@@ -1,37 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArtifactCarousel } from "@/components/ArtifactCarousel";
 import { SubmitAnswerDialog } from "@/components/SubmitAnswerDialog";
 import { Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Archive of Unspoken Echoes" },
-      {
-        name: "description",
-        content: "An ARG of curious artifacts. Inspect the relics, solve the riddles, log your findings.",
-      },
-      { property: "og:title", content: "Archive of Unspoken Echoes" },
-      {
-        property: "og:description",
-        content: "An ARG of curious artifacts. Inspect the relics, solve the riddles, log your findings.",
-      },
-    ],
-  }),
-  component: Index,
-});
-
-function Index() {
+export default function App() {
   const [submitOpen, setSubmitOpen] = useState(false);
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col">
-      {/* Soft lantern glow + vignette */}
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(232,155,60,0.15),transparent_60%)] glow-pulse" />
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_30%,rgba(0,0,0,0.55)_100%)]" />
 
-      {/* Decorative watermark */}
       <div className="pointer-events-none select-none fixed top-8 left-8 font-display text-[8rem] sm:text-[10rem] leading-none text-primary/10 rotate-[-8deg]">
         ?
       </div>
@@ -39,7 +18,6 @@ function Index() {
         ?
       </div>
 
-      {/* Header */}
       <header className="relative z-10 w-full max-w-4xl mx-auto text-center px-6 pt-10 sm:pt-16">
         <p className="text-xs sm:text-sm uppercase tracking-[0.4em] text-primary font-bold">
           Case File #88-Alpha
@@ -53,12 +31,10 @@ function Index() {
         </p>
       </header>
 
-      {/* Carousel */}
       <main className="relative z-10 flex-1 flex items-center justify-center py-12 sm:py-16 px-4">
         <ArtifactCarousel />
       </main>
 
-      {/* Floating submit seal */}
       <button
         type="button"
         onClick={() => setSubmitOpen(true)}
@@ -76,7 +52,6 @@ function Index() {
         </span>
       </button>
 
-      {/* Footer */}
       <footer className="relative z-10 w-full max-w-5xl mx-auto mt-12 px-6 pb-10 pt-8 border-t border-border flex flex-col sm:flex-row justify-between gap-6 text-xs uppercase tracking-widest text-muted-foreground">
         <div className="space-y-2 max-w-xs">
           <p className="font-bold text-foreground/70 font-display text-base normal-case tracking-normal">
