@@ -10,6 +10,8 @@ export type Artifact = {
   id: string;
   title: string;
   image: string;
+  /** Image shown inside the pop-up (tall portrait card). Defaults to `image` if omitted. */
+  detailImage: string;
   caption: string;
   lore: string;
   /** If true, the slot stays locked until revealed (e.g. by a correct answer). */
