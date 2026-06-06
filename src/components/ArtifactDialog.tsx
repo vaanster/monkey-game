@@ -12,8 +12,21 @@ export function ArtifactDialog({ artifact, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl border-border bg-card text-foreground">
-        <DialogHeader>
+      <DialogContent className="max-w-md border-border bg-card text-foreground max-h-[95vh] overflow-y-auto">
+        {/* Tall portrait card image */}
+        <div className="w-full flex justify-center pt-2">
+          <div className="w-full aspect-[9/16] max-h-[70vh] rounded-md overflow-hidden ring-1 ring-primary/20 bg-background">
+            <img
+              src={artifact.detailImage}
+              alt={artifact.title}
+              loading="lazy"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+
+        {/* Text block */}
+        <DialogHeader className="pt-2 space-y-1.5">
           <p className="text-xs uppercase tracking-[0.3em] text-primary">Fragment {artifact.id}</p>
           <DialogTitle className="font-display text-4xl md:text-5xl text-foreground">
             {artifact.title}
@@ -23,24 +36,9 @@ export function ArtifactDialog({ artifact, open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row gap-6 items-center pt-2">
-          <div className="relative shrink-0">
-            <div className="absolute -inset-2 rounded-full border-2 border-dashed border-muted/40" />
-            <div className="relative size-48 sm:size-56 rounded-full overflow-hidden bg-background ring-4 ring-primary/30">
-              <img
-                src={artifact.detailImage}
-                alt={artifact.title}
-                width={768}
-                height={768}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <p className="text-base leading-relaxed text-foreground/90 text-pretty">
-            {artifact.lore}
-          </p>
-        </div>
+        <p className="text-base leading-relaxed text-foreground/90 text-pretty">
+          {artifact.lore}
+        </p>
       </DialogContent>
     </Dialog>
   );
