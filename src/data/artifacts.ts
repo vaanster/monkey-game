@@ -2,6 +2,7 @@
 // To swap an image: drop a new file in src/assets/artifacts/ and update the import below.
 import artifact01 from "@/assets/artifacts/artifact-01.png";
 import artifact02 from "@/assets/artifacts/chef_avatar.png";
+import chefCard from "@/assets/artifacts/chef_card.png";
 import artifact03 from "@/assets/artifacts/artifact-03.png";
 import artifact04 from "@/assets/artifacts/artifact-04.png";
 import artifact05 from "@/assets/artifacts/artifact-05.png";
@@ -31,7 +32,7 @@ export const artifacts: Artifact[] = [
     id: "02",
     title: "The Crooked Cottage",
     image: artifact02,
-    detailImage: artifact02,
+    detailImage: chefCard,
     caption: "A polaroid that refuses to dry.",
     lore: "The windows light up at the same hour each evening, even when the photo is locked in a drawer. Someone's home.",
   },
