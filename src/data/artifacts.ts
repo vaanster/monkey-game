@@ -19,7 +19,8 @@ export type Artifact = {
   hidden?: boolean;
 };
 
-export const artifacts: Artifact[] = [
+// Visible artifacts (shown from the start).
+const visibleArtifacts: Artifact[] = [
   {
     id: "01",
     title: "The Eyeful Key",
@@ -60,13 +61,58 @@ export const artifacts: Artifact[] = [
     caption: "Mask of a forgotten festival.",
     lore: "Worn once a year by the town's smallest child. The cracks have always been there. So have the eyes.",
   },
+];
+
+// Pre-configured hidden slots. Add as many as you want — they'll appear as "???"
+// in the carousel until their `id` is returned in the Apps Script `unlocks` array.
+// To pre-configure a new puzzle: just add another entry here with a unique `id`,
+// then set the sheet's `unlocks` column to that same id.
+const hiddenArtifacts: Artifact[] = [
   {
     id: "06",
     title: "???",
     image: artifact05,
-    detailImage: artifact05, // placeholder; revealed image will replace this later
+    detailImage: artifact05,
+    caption: "This slot is sealed.",
+    lore: "Something is missing. Someone knows the answer.",
+    hidden: true,
+  },
+  {
+    id: "07",
+    title: "???",
+    image: artifact05,
+    detailImage: artifact05,
+    caption: "This slot is sealed.",
+    lore: "Something is missing. Someone knows the answer.",
+    hidden: true,
+  },
+  {
+    id: "08",
+    title: "???",
+    image: artifact05,
+    detailImage: artifact05,
+    caption: "This slot is sealed.",
+    lore: "Something is missing. Someone knows the answer.",
+    hidden: true,
+  },
+  {
+    id: "09",
+    title: "???",
+    image: artifact05,
+    detailImage: artifact05,
+    caption: "This slot is sealed.",
+    lore: "Something is missing. Someone knows the answer.",
+    hidden: true,
+  },
+  {
+    id: "10",
+    title: "???",
+    image: artifact05,
+    detailImage: artifact05,
     caption: "This slot is sealed.",
     lore: "Something is missing. Someone knows the answer.",
     hidden: true,
   },
 ];
+
+export const artifacts: Artifact[] = [...visibleArtifacts, ...hiddenArtifacts];

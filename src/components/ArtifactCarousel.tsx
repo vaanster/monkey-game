@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { artifacts as baseArtifacts, type Artifact } from "@/data/artifacts";
 import { ArtifactDialog } from "@/components/ArtifactDialog";
-import { loadProgress } from "@/lib/submitAnswer";
+import { loadProgress, loadCustomArtifacts } from "@/lib/submitAnswer";
 import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
 
 export function ArtifactCarousel() {
   const [index, setIndex] = useState(0);
   const [openId, setOpenId] = useState<string | null>(null);
   const [unlocked, setUnlocked] = useState<string[]>(() => loadProgress().unlockedArtifacts);
+  const [custom, setCustom] = useState<Artifact[]>(() => loadCustomArtifacts());
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    const refresh = () => setUnlocked(loadProgress().unlockedArtifacts);
+    const refresh = () => {
+      setUnlocked(loadProgress().unlockedArtifacts);
+      setCustom(loadCustomArtifacts());
+    };
     window.addEventListener("nightshade:progress-updated", refresh);
     window.addEventListener("storage", refresh);
     return () => {
@@ -20,13 +24,18 @@ export function ArtifactCarousel() {
     };
   }, []);
 
-  const artifacts: Artifact[] = useMemo(
-    () =>
-      baseArtifacts.map((a) =>
-        a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a,
-      ),
-    [unlocked],
-  );
+  const artifacts: Artifact[] = useMemo(() => {
+    // Custom artifacts (from sheet) override base entries with the same id.
+    const customIds = new Set(custom.map((c) => c.id));
+    const merged: Artifact[] = [
+      ...baseArtifacts.filter((a) => !customIds.has(a.id)),
+      ...custom,
+    ];
+    // Reveal anything in `unlocked`.
+    return merged.map((a) =>
+      a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a,
+    );
+  }, [unlocked, custom]);
 
   const current: Artifact = artifacts[index];
   const isLocked = !!current.hidden;
