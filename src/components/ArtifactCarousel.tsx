@@ -1,12 +1,32 @@
-import { useEffect, useRef, useState } from "react";
-import { artifacts, type Artifact } from "@/data/artifacts";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { artifacts as baseArtifacts, type Artifact } from "@/data/artifacts";
 import { ArtifactDialog } from "@/components/ArtifactDialog";
+import { loadProgress } from "@/lib/submitAnswer";
 import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
 
 export function ArtifactCarousel() {
   const [index, setIndex] = useState(0);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [unlocked, setUnlocked] = useState<string[]>(() => loadProgress().unlockedArtifacts);
   const touchStartX = useRef<number | null>(null);
+
+  useEffect(() => {
+    const refresh = () => setUnlocked(loadProgress().unlockedArtifacts);
+    window.addEventListener("nightshade:progress-updated", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("nightshade:progress-updated", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const artifacts: Artifact[] = useMemo(
+    () =>
+      baseArtifacts.map((a) =>
+        a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a,
+      ),
+    [unlocked],
+  );
 
   const current: Artifact = artifacts[index];
   const isLocked = !!current.hidden;
