@@ -25,10 +25,17 @@ export function ArtifactCarousel({ source = baseArtifacts }: { source?: Artifact
   }, []);
 
   const artifacts: Artifact[] = useMemo(() => {
-    const customIds = new Set(custom.map((c) => c.id));
     const sourceIds = new Set(source.map((a) => a.id));
-    // Only merge in custom artifacts that belong to this carousel's id space.
-    const relevantCustom = custom.filter((c) => sourceIds.has(c.id));
+    const isVip = source.some((a) => a.id.startsWith("v"));
+    // Route custom artifacts: those matching a source id override it. Others
+    // (entirely new ids from the sheet) default to the main carousel unless
+    // their id is prefixed with "v" (VIP).
+    const relevantCustom = custom.filter((c) => {
+      if (sourceIds.has(c.id)) return true;
+      const customIsVip = c.id.startsWith("v");
+      return customIsVip === isVip;
+    });
+    const customIds = new Set(relevantCustom.map((c) => c.id));
     const merged: Artifact[] = [
       ...source.filter((a) => !customIds.has(a.id)),
       ...relevantCustom,
