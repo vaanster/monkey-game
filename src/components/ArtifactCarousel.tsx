@@ -95,7 +95,7 @@ export function ArtifactCarousel() {
               type="button"
               onClick={openCurrent}
               disabled={isLocked}
-              aria-label={isLocked ? "Locked slot" : `Inspect ${current.title}`}
+              aria-label={isLocked ? "Locked slot" : `Inspect ${current!.title}`}
               className="relative size-56 sm:size-80 rounded-full overflow-hidden bg-card ring-4 ring-background shadow-2xl shadow-primary/20 transition-transform hover:scale-[1.02] active:scale-100 disabled:cursor-not-allowed"
             >
               {isLocked ? (
