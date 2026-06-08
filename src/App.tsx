@@ -46,8 +46,23 @@ export default function App() {
         </p>
       </header>
 
-      <main className="relative z-10 flex-1 flex items-center justify-center py-12 sm:py-16 px-4">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center py-12 sm:py-16 px-4 gap-16 sm:gap-24">
         <ArtifactCarousel />
+
+        {vipUnlocked && (
+          <section className="w-full flex flex-col items-center gap-8 animate-reveal">
+            <div className="text-center">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.4em] text-primary font-bold">
+                Restricted Wing
+              </p>
+              <h2 className="mt-3 font-display text-4xl sm:text-6xl text-foreground leading-none">
+                VIP
+              </h2>
+              <div className="mx-auto mt-4 h-px w-24 bg-primary/50" />
+            </div>
+            <ArtifactCarousel source={vipArtifacts} />
+          </section>
+        )}
       </main>
 
       <button
