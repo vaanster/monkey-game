@@ -51,14 +51,14 @@ export function ArtifactCarousel() {
       if (openId) return;
       if (e.key === "ArrowLeft") go(-1);
       if (e.key === "ArrowRight") go(1);
-      if (e.key === "Enter" && !isLocked) setOpenId(current.id);
+      if (e.key === "Enter" && !isLocked && current) setOpenId(current.id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openId, isLocked, current.id]);
+  }, [openId, isLocked, current?.id]);
 
   const openCurrent = () => {
-    if (!isLocked) setOpenId(current.id);
+    if (!isLocked && current) setOpenId(current.id);
   };
 
   return (
