@@ -25,18 +25,18 @@ export function ArtifactCarousel({ source = baseArtifacts }: { source?: Artifact
   }, []);
 
   const artifacts: Artifact[] = useMemo(() => {
-    // Custom artifacts (from sheet) override base entries with the same id.
     const customIds = new Set(custom.map((c) => c.id));
+    const sourceIds = new Set(source.map((a) => a.id));
+    // Only merge in custom artifacts that belong to this carousel's id space.
+    const relevantCustom = custom.filter((c) => sourceIds.has(c.id));
     const merged: Artifact[] = [
-      ...baseArtifacts.filter((a) => !customIds.has(a.id)),
-      ...custom,
+      ...source.filter((a) => !customIds.has(a.id)),
+      ...relevantCustom,
     ];
-    // Reveal anything in `unlocked`, then drop anything still hidden so it
-    // doesn't appear in the carousel at all until unlocked.
     return merged
       .map((a) => (a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a))
       .filter((a) => !a.hidden);
-  }, [unlocked, custom]);
+  }, [unlocked, custom, source]);
 
   const safeIndex = artifacts.length > 0 ? Math.min(index, artifacts.length - 1) : 0;
   const current: Artifact | undefined = artifacts[safeIndex];
