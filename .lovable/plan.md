@@ -1,24 +1,37 @@
 ## Goal
-Hidden carousel slots should not appear at all until they are unlocked. On first visit, only the 5 visible artifacts are shown. Each unlock (via the sheet today, other triggers later) appends a new element to the carousel.
+Add a second "VIP" carousel below the main one. Both carousels coexist — the main one never disappears. The VIP section (title + carousel) stays completely hidden until a specific unlock id is granted by the sheet. Once unlocked, it starts with 3 visible slides and grows one slot at a time as further answers unlock more.
 
 ## Changes
 
-**`src/components/ArtifactCarousel.tsx`**
-- After merging base + custom artifacts and applying `unlocked`, filter out any entry still marked `hidden`.
-- Result: sealed slots are completely absent from the carousel, the title row, and the indicator dots until their id is unlocked.
-- Keep the index safe: if `index >= artifacts.length` after a refresh, clamp to the last item (no-op normally, just defensive).
-
-**`src/components/ArtifactDialog.tsx`** (and the "Sealed" lock UI in the carousel)
-- No longer reachable for hidden items, but leave the `Lock` branch in place as a harmless fallback. No behavior change needed.
-
 **`src/data/artifacts.ts`**
-- No structural change. `hiddenArtifacts` (ids `06`–`10`) stays as the pre-configured pool. They simply won't render until unlocked by the sheet's `unlocks` value or by a `newArtifact` payload.
-- Document at the top of the file: "Hidden entries are invisible in the carousel until their id appears in `unlockedArtifacts` (localStorage) — set the sheet's `unlocks` column to that id."
+- Export a new array `vipArtifacts: Artifact[]` alongside `artifacts`.
+- Contents (id namespace `v01`, `v02`, …):
+  - `v01`, `v02`, `v03` — initially visible once VIP is unlocked (real title/caption/lore; placeholder images for now).
+  - `v04`–`v08` — pre-configured `hidden: true` slots (same "???" pattern as the main carousel's `06`–`10`). Add more later by appending.
+- Main carousel keeps its `01`–`10` ids untouched.
 
-**No changes** to `submitAnswer.ts`, `config.ts`, or the Apps Script contract. Unlocks already drive `unlockedArtifacts`; we're just changing how the carousel renders that state.
+**`src/components/ArtifactCarousel.tsx`**
+- Accept an optional prop `source: Artifact[]` (defaults to the existing `artifacts`). All filtering, unlocking, custom-artifact merging, indicators, and dialog logic stays exactly the same — it just operates on whichever list is passed in.
+- The shared `unlocked` ids from localStorage drive both instances; ids never collide because of the `v` prefix.
+
+**`src/App.tsx`**
+- Track `unlocked` ids from `loadProgress()` with the existing `nightshade:progress-updated` + `storage` listeners.
+- Define `const VIP_UNLOCK_ID = "vip"` (the value the sheet's `unlocks` column returns to reveal the section).
+- Always render the main `<ArtifactCarousel />`.
+- Below it, conditionally render a VIP section only when `unlocked.includes(VIP_UNLOCK_ID)`:
+  - A "VIP" heading styled with the existing display font + primary accent and a thin divider.
+  - `<ArtifactCarousel source={vipArtifacts} />`
+- When locked, render nothing — no placeholder, no hint.
+
+**No changes** to `submitAnswer.ts`, `config.ts`, or the Apps Script contract. Everything flows through the existing `unlocks` array.
+
+## Sheet configuration
+- One answer row with `unlocks = vip` → reveals the VIP section with its 3 starting slides.
+- Additional answer rows with `unlocks = v04`, `v05`, … → grow the VIP carousel one slot at a time.
+- Same pattern as the main carousel (`unlocks = 06`, `07`, …) continues to work independently.
 
 ## Behavior after change
-- Fresh visit → carousel shows 5 dots, 5 artifacts (`01`–`05`).
-- Correct answer returns `unlocks: ["06"]` → carousel grows to 6 dots, 6 artifacts; the new one appears at the end.
-- Same applies to sheet-defined `newArtifact` payloads (id auto-added to unlocks).
-- localStorage continues to persist unlocks across reloads.
+- Fresh visit → only the main carousel is visible; no sign of VIP exists.
+- Correct answer returns `unlocks: ["vip"]` → "VIP" title + VIP carousel appear with `v01`–`v03`. Main carousel is unchanged.
+- Subsequent correct answers returning `v04`, `v05`, … extend the VIP carousel; ids like `06`, `07`, … continue to extend the main one. Both can grow indefinitely.
+- All state persists in localStorage via the existing `unlockedArtifacts` array.
