@@ -31,14 +31,16 @@ export function ArtifactCarousel() {
       ...baseArtifacts.filter((a) => !customIds.has(a.id)),
       ...custom,
     ];
-    // Reveal anything in `unlocked`.
-    return merged.map((a) =>
-      a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a,
-    );
+    // Reveal anything in `unlocked`, then drop anything still hidden so it
+    // doesn't appear in the carousel at all until unlocked.
+    return merged
+      .map((a) => (a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a))
+      .filter((a) => !a.hidden);
   }, [unlocked, custom]);
 
-  const current: Artifact = artifacts[index];
-  const isLocked = !!current.hidden;
+  const safeIndex = artifacts.length > 0 ? Math.min(index, artifacts.length - 1) : 0;
+  const current: Artifact | undefined = artifacts[safeIndex];
+  const isLocked = !current;
 
   const go = (delta: number) => {
     setIndex((i) => (i + delta + artifacts.length) % artifacts.length);
