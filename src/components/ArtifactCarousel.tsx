@@ -137,10 +137,10 @@ export function ArtifactCarousel() {
       {/* Title + caption */}
       <div className="text-center space-y-1 px-4 min-h-[5rem]">
         <h2 className="font-display text-3xl sm:text-4xl text-foreground">
-          {isLocked ? "???" : current.title}
+          {isLocked ? "???" : current!.title}
         </h2>
         <p className="text-sm text-muted-foreground italic">
-          {isLocked ? "This slot has not yet been opened." : current.caption}
+          {isLocked ? "This slot has not yet been opened." : current!.caption}
         </p>
       </div>
 
