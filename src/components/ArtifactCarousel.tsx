@@ -4,7 +4,7 @@ import { ArtifactDialog } from "@/components/ArtifactDialog";
 import { loadProgress, loadCustomArtifacts } from "@/lib/submitAnswer";
 import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
 
-export function ArtifactCarousel() {
+export function ArtifactCarousel({ source = baseArtifacts }: { source?: Artifact[] } = {}) {
   const [index, setIndex] = useState(0);
   const [openId, setOpenId] = useState<string | null>(null);
   const [unlocked, setUnlocked] = useState<string[]>(() => loadProgress().unlockedArtifacts);
