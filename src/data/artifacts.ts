@@ -116,3 +116,49 @@ const hiddenArtifacts: Artifact[] = [
 ];
 
 export const artifacts: Artifact[] = [...visibleArtifacts, ...hiddenArtifacts];
+
+// ===== VIP carousel =====
+// The VIP section is hidden in its entirety until the sheet returns
+// `unlocks: ["vip"]`. Once unlocked, these visible entries appear.
+// Add or remove entries here to change the starting VIP set.
+const visibleVipArtifacts: Artifact[] = [
+  {
+    id: "v01",
+    title: "VIP Relic I",
+    image: artifact01,
+    detailImage: artifact01,
+    caption: "Reserved for those who know the password.",
+    lore: "A token of trust. Whoever holds it has already proven something.",
+  },
+  {
+    id: "v02",
+    title: "VIP Relic II",
+    image: artifact03,
+    detailImage: artifact03,
+    caption: "Whispers louder in private rooms.",
+    lore: "Some doors only open for the second knock. This is the second knock.",
+  },
+  {
+    id: "v03",
+    title: "VIP Relic III",
+    image: artifact04,
+    detailImage: artifact04,
+    caption: "Marked for the inner circle.",
+    lore: "The ink dries differently here. Take a closer look — but not too close.",
+  },
+];
+
+// Pre-configured hidden VIP slots. Add as many as you want — they'll appear
+// once the sheet returns the matching id in `unlocks` (e.g. `v04`).
+const hiddenVipArtifacts: Artifact[] = [
+  { id: "v04", title: "???", image: artifact05, detailImage: artifact05, caption: "This slot is sealed.", lore: "Something is missing. Someone knows the answer.", hidden: true },
+  { id: "v05", title: "???", image: artifact05, detailImage: artifact05, caption: "This slot is sealed.", lore: "Something is missing. Someone knows the answer.", hidden: true },
+  { id: "v06", title: "???", image: artifact05, detailImage: artifact05, caption: "This slot is sealed.", lore: "Something is missing. Someone knows the answer.", hidden: true },
+  { id: "v07", title: "???", image: artifact05, detailImage: artifact05, caption: "This slot is sealed.", lore: "Something is missing. Someone knows the answer.", hidden: true },
+  { id: "v08", title: "???", image: artifact05, detailImage: artifact05, caption: "This slot is sealed.", lore: "Something is missing. Someone knows the answer.", hidden: true },
+];
+
+export const vipArtifacts: Artifact[] = [...visibleVipArtifacts, ...hiddenVipArtifacts];
+
+// The id that unlocks the VIP section itself (title + carousel visibility).
+export const VIP_UNLOCK_ID = "vip";

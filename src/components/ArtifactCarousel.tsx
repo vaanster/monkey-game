@@ -4,7 +4,7 @@ import { ArtifactDialog } from "@/components/ArtifactDialog";
 import { loadProgress, loadCustomArtifacts } from "@/lib/submitAnswer";
 import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
 
-export function ArtifactCarousel() {
+export function ArtifactCarousel({ source = baseArtifacts }: { source?: Artifact[] } = {}) {
   const [index, setIndex] = useState(0);
   const [openId, setOpenId] = useState<string | null>(null);
   const [unlocked, setUnlocked] = useState<string[]>(() => loadProgress().unlockedArtifacts);
@@ -25,18 +25,25 @@ export function ArtifactCarousel() {
   }, []);
 
   const artifacts: Artifact[] = useMemo(() => {
-    // Custom artifacts (from sheet) override base entries with the same id.
-    const customIds = new Set(custom.map((c) => c.id));
+    const sourceIds = new Set(source.map((a) => a.id));
+    const isVip = source.some((a) => a.id.startsWith("v"));
+    // Route custom artifacts: those matching a source id override it. Others
+    // (entirely new ids from the sheet) default to the main carousel unless
+    // their id is prefixed with "v" (VIP).
+    const relevantCustom = custom.filter((c) => {
+      if (sourceIds.has(c.id)) return true;
+      const customIsVip = c.id.startsWith("v");
+      return customIsVip === isVip;
+    });
+    const customIds = new Set(relevantCustom.map((c) => c.id));
     const merged: Artifact[] = [
-      ...baseArtifacts.filter((a) => !customIds.has(a.id)),
-      ...custom,
+      ...source.filter((a) => !customIds.has(a.id)),
+      ...relevantCustom,
     ];
-    // Reveal anything in `unlocked`, then drop anything still hidden so it
-    // doesn't appear in the carousel at all until unlocked.
     return merged
       .map((a) => (a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a))
       .filter((a) => !a.hidden);
-  }, [unlocked, custom]);
+  }, [unlocked, custom, source]);
 
   const safeIndex = artifacts.length > 0 ? Math.min(index, artifacts.length - 1) : 0;
   const current: Artifact | undefined = artifacts[safeIndex];
