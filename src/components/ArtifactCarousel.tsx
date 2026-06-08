@@ -106,8 +106,8 @@ export function ArtifactCarousel() {
               ) : (
                 <>
                   <img
-                    src={current.image}
-                    alt={current.title}
+                    src={current!.image}
+                    alt={current!.title}
                     width={768}
                     height={768}
                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
