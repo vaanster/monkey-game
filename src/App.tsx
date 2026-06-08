@@ -1,10 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArtifactCarousel } from "@/components/ArtifactCarousel";
 import { SubmitAnswerDialog } from "@/components/SubmitAnswerDialog";
+import { vipArtifacts, VIP_UNLOCK_ID } from "@/data/artifacts";
+import { loadProgress } from "@/lib/submitAnswer";
 import { Sparkles } from "lucide-react";
 
 export default function App() {
   const [submitOpen, setSubmitOpen] = useState(false);
+  const [unlocked, setUnlocked] = useState<string[]>(() => loadProgress().unlockedArtifacts);
+
+  useEffect(() => {
+    const refresh = () => setUnlocked(loadProgress().unlockedArtifacts);
+    window.addEventListener("nightshade:progress-updated", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("nightshade:progress-updated", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  const vipUnlocked = unlocked.includes(VIP_UNLOCK_ID);
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col">
