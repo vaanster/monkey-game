@@ -31,14 +31,16 @@ export function ArtifactCarousel() {
       ...baseArtifacts.filter((a) => !customIds.has(a.id)),
       ...custom,
     ];
-    // Reveal anything in `unlocked`.
-    return merged.map((a) =>
-      a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a,
-    );
+    // Reveal anything in `unlocked`, then drop anything still hidden so it
+    // doesn't appear in the carousel at all until unlocked.
+    return merged
+      .map((a) => (a.hidden && unlocked.includes(a.id) ? { ...a, hidden: false } : a))
+      .filter((a) => !a.hidden);
   }, [unlocked, custom]);
 
-  const current: Artifact = artifacts[index];
-  const isLocked = !!current.hidden;
+  const safeIndex = artifacts.length > 0 ? Math.min(index, artifacts.length - 1) : 0;
+  const current: Artifact | undefined = artifacts[safeIndex];
+  const isLocked = !current;
 
   const go = (delta: number) => {
     setIndex((i) => (i + delta + artifacts.length) % artifacts.length);
@@ -49,14 +51,14 @@ export function ArtifactCarousel() {
       if (openId) return;
       if (e.key === "ArrowLeft") go(-1);
       if (e.key === "ArrowRight") go(1);
-      if (e.key === "Enter" && !isLocked) setOpenId(current.id);
+      if (e.key === "Enter" && !isLocked && current) setOpenId(current.id);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openId, isLocked, current.id]);
+  }, [openId, isLocked, current?.id]);
 
   const openCurrent = () => {
-    if (!isLocked) setOpenId(current.id);
+    if (!isLocked && current) setOpenId(current.id);
   };
 
   return (
@@ -93,7 +95,7 @@ export function ArtifactCarousel() {
               type="button"
               onClick={openCurrent}
               disabled={isLocked}
-              aria-label={isLocked ? "Locked slot" : `Inspect ${current.title}`}
+              aria-label={isLocked ? "Locked slot" : `Inspect ${current!.title}`}
               className="relative size-56 sm:size-80 rounded-full overflow-hidden bg-card ring-4 ring-background shadow-2xl shadow-primary/20 transition-transform hover:scale-[1.02] active:scale-100 disabled:cursor-not-allowed"
             >
               {isLocked ? (
@@ -104,8 +106,8 @@ export function ArtifactCarousel() {
               ) : (
                 <>
                   <img
-                    src={current.image}
-                    alt={current.title}
+                    src={current!.image}
+                    alt={current!.title}
                     width={768}
                     height={768}
                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
@@ -135,10 +137,10 @@ export function ArtifactCarousel() {
       {/* Title + caption */}
       <div className="text-center space-y-1 px-4 min-h-[5rem]">
         <h2 className="font-display text-3xl sm:text-4xl text-foreground">
-          {isLocked ? "???" : current.title}
+          {isLocked ? "???" : current!.title}
         </h2>
         <p className="text-sm text-muted-foreground italic">
-          {isLocked ? "This slot has not yet been opened." : current.caption}
+          {isLocked ? "This slot has not yet been opened." : current!.caption}
         </p>
       </div>
 
