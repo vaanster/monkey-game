@@ -109,8 +109,8 @@ export function SubmitAnswerDialog({ open, onOpenChange }: Props) {
           </Button>
 
           {status.kind === "success" && (
-            <div className="flex items-start gap-2 rounded-md border border-primary/40 bg-primary/10 p-3 text-sm text-foreground">
-              <CheckCircle2 className="size-5 text-primary shrink-0 mt-0.5" />
+            <div className="flex items-start gap-2 rounded-md border border-green-500/40 bg-green-500/10 p-3 text-sm text-foreground">
+              <CheckCircle2 className="size-5 text-green-500 shrink-0 mt-0.5" />
               <p>{status.message}</p>
             </div>
           )}
