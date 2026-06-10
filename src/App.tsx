@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ArtifactCarousel } from "@/components/ArtifactCarousel";
+import { VipFilmstrip } from "@/components/VipFilmstrip";
 import { SubmitAnswerDialog } from "@/components/SubmitAnswerDialog";
-import { vipArtifacts, VIP_UNLOCK_ID } from "@/data/artifacts";
+import { VIP_UNLOCK_ID } from "@/data/artifacts";
 import { loadProgress } from "@/lib/submitAnswer";
 import { Sparkles } from "lucide-react";
 
@@ -60,7 +61,7 @@ export default function App() {
               </h2>
               <div className="mx-auto mt-4 h-px w-24 bg-primary/50" />
             </div>
-            <ArtifactCarousel source={vipArtifacts} />
+            <VipFilmstrip />
           </section>
         )}
       </main>
